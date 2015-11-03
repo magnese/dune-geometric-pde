@@ -1,0 +1,41 @@
+# mesh filename (default: mesh.msh)
+FileName: /home/ma/m/ma2413/mshfiles/simple/1D/ellipse.msh
+
+#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cube.msh
+#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/sphere.msh
+#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/ellipsoid.msh
+#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cigar.msh
+#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cage.msh
+
+# time step (default: 0.1)
+fem.timeprovider.fixedtimestep: 0.1
+
+# multiplication factor to use for each time step (default: 1.0)
+#fem.timeprovider.factor: 1.0
+
+# time used for initializing the starting time (default: 0.0)
+fem.timeprovider.starttime: 0.0
+
+# end time (default: 0.1)
+EndTime: 30.0
+
+# use mean curvature flow (default: 0)
+UseMeanCurvatureFlow: 0
+
+# filename dump final mesh, if empty no dump (default:)
+#FileNameFinalMesh: out.msh
+
+# run the code until the interface is stationary (default: 0)
+#CreateStationaryInterface: 1
+
+# path used for all file output (default: .)
+fem.prefix: ./solution
+
+# output format: 0 -> vtk-cell | 1 -> vtk-vertex | 2 -> sub-vtk-cell | 3 -> binary | 4 -> gnuplot | 5 -> none
+fem.io.outputformat: 0
+
+# time between writing file (default: 0)
+#fem.io.savestep: 1
+
+# number of time steps between writting file (default: 0)
+fem.io.savecount: 1
