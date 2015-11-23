@@ -4,8 +4,6 @@
 #define ALBERTAGRID // the mesh file must be oriented consistently since it does not perform any check
 //#define ALUGRID_SIMPLEX
 
-#define HAVE_UMFPACK 1
-
 #define POLORDER 1
 
 #include "config.h"
