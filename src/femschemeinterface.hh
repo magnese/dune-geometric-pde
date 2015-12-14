@@ -18,7 +18,7 @@ namespace Dune
 namespace Fem
 {
 
-template<class GridImp,class TimeProviderImp=FixedStepTimeProvider<>>
+template<typename GridImp,typename TimeProviderImp=FixedStepTimeProvider<>>
 class FemSchemeInterface
 {
   public:
@@ -52,15 +52,15 @@ class FemSchemeInterface
 
   FemSchemeInterface(const ThisType& )=delete;
 
-  inline GridType& getGrid()
+  GridType& grid()
   {
     return grid_;
   }
-  inline const GridPartType& getGridPart() const
+  const GridPartType& gridPart() const
   {
     return gridpart_;
   }
-  inline const CombinedDiscreteSpaceType& getSpace() const
+  const CombinedDiscreteSpaceType& space() const
   {
     return space_;
   }

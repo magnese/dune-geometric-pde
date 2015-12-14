@@ -16,23 +16,23 @@ namespace Dune
 namespace Fem
 {
 
-template<class FemSchemeType>
+template<typename FemSchemeType>
 void computeInterface(FemSchemeType& femScheme)
 {
   // create time provider
   FixedStepTimeProvider<> timeProvider;
 
   // get grid
-  auto& grid(femScheme.getGrid());
+  auto& grid(femScheme.grid());
 
   // get space
   typedef typename FemSchemeType::CombinedDiscreteFunctionType CombinedDiscreteFunctionType;
-  CombinedDiscreteFunctionType solution("solution",femScheme.getSpace());
+  CombinedDiscreteFunctionType solution("solution",femScheme.space());
   solution.clear();
 
   // output number of dofs
-  const auto numDofsCurvature(femScheme.getSpace().template subDiscreteFunctionSpace<0>().size());
-  const auto numDofsPosition(femScheme.getSpace().template subDiscreteFunctionSpace<1>().size());
+  const auto numDofsCurvature(femScheme.space().template subDiscreteFunctionSpace<0>().size());
+  const auto numDofsPosition(femScheme.space().template subDiscreteFunctionSpace<1>().size());
   std::cout<<"Solving for "<<numDofsCurvature<<" unkowns for curvature and "<<numDofsPosition<<" unkowns for position."<<std::endl;
 
   // create structure to dump on file
