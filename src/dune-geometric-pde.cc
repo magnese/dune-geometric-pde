@@ -66,7 +66,7 @@ int main(int argc,char** argv)
     if(fileNameFinalMesh!="")
     {
       Dune::GmshWriter<typename GridType::LeafGridView> gmshWriter(grid.leafGridView());
-      //gmshWriter.setPrecision(15);
+      gmshWriter.setPrecision(15);
       gmshWriter.write(fileNameFinalMesh,elementsIDs);
       std::cout<<std::endl<<"Final mesh dumped into "<<fileNameFinalMesh<<"."<<std::endl;
     }

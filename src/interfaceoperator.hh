@@ -100,7 +100,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
     NormalType normal;
     typename NormalType::NormalVectorType normalVector;
     // assemble global matrix
-    for(const auto entity:space_)
+    for(const auto& entity:space_)
     {
       // compute normal
       normal(entity,normalVector);
@@ -109,16 +109,16 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
       const auto& baseSet(localMatrix.domainBasisFunctionSet());
       // assemble local A_m (curvature) and local \vec{A_m} (position)
       CachingQuadrature<typename DiscreteSpaceType::GridPartType,0> quadrature(entity,2*space_.order()+1);
-      for(const auto qp:quadrature)
+      for(const auto& qp:quadrature)
       {
         // evaluate basis functions and weight
         baseSet.evaluateAll(qp,phi);
         baseSet.jacobianAll(qp,gradphi);
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
         // fill A_m
-        for(auto i=0;i!=worlddim;++i)
+        for(std::size_t i=0;i!=worlddim;++i)
         {
-          for(auto j=0;j!=worlddim;++j)
+          for(std::size_t j=0;j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
             if(usemeancurvflow_)
@@ -137,7 +137,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
           for(std::size_t j=worlddim;j!=columnLocalSize;++j)
           {
             RangeFieldType value(0.0);
-            for(auto k=1;k!=rangedim;++k)
+            for(std::size_t k=1;k!=rangedim;++k)
               value+=gradphi[i][k]*gradphi[j][k];
             value*=weight;
             localMatrix.add(i,j,value);
@@ -146,7 +146,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
       }
       // assemble local \vec{N_m} (curvature_j-position_i)
       CachingLumpingQuadrature<typename DiscreteSpaceType::GridPartType,0> lumpingQuadrature(entity);
-      for(const auto qp:lumpingQuadrature)
+      for(const auto& qp:lumpingQuadrature)
       {
         // evaluate basis functions and weight
         baseSet.evaluateAll(qp,phi);
@@ -155,10 +155,10 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
         const auto rowLocalSize(localMatrix.rows());
         for(std::size_t i=worlddim;i!=rowLocalSize;++i)
         {
-          for(auto j=0;j!=worlddim;++j)
+          for(std::size_t j=0;j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
-            for(auto index=0;index!=worlddim;++index)
+            for(std::size_t index=0;index!=worlddim;++index)
               value+=phi[i][index+1]*normalVector[index];
             value*=weight*phi[j][0];
             localMatrix.add(i,j,value);

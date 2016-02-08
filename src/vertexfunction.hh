@@ -70,15 +70,15 @@ class VertexFunction:public DiscreteCoordFunction<typename GridImp::ctype,GridIm
   {
     // fill the vertices coordinates with the grid vertices
     const auto localBlockSize(DiscreteSpaceType::localBlockSize);
-    for(const auto entity:entities(discreteFunction()))
+    for(const auto& entity:entities(discreteFunction()))
     {
       auto localCoord(discreteFunction().localFunction(entity));
       const auto numLocalBlocks(entity.geometry().corners());
       std::size_t row(0);
-      for(auto localIdx=0;localIdx!=numLocalBlocks;++localIdx)
+      for(std::size_t localIdx=0;localIdx!=numLocalBlocks;++localIdx)
       {
         const auto x(entity.geometry().corner(localIdx));
-        for(auto l=0;l!=localBlockSize;++l,++row)
+        for(std::size_t l=0;l!=localBlockSize;++l,++row)
           localCoord[row]=x[l];
       }
     }
