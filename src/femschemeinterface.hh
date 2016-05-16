@@ -46,7 +46,7 @@ class FemSchemeInterface
   // define time provider
   typedef TimeProviderImp TimeProviderType;
 
-  explicit FemSchemeInterface(GridType& grid,const bool& useMeanCurvFlow):
+  explicit FemSchemeInterface(GridType& grid,bool useMeanCurvFlow):
     grid_(grid),gridpart_(grid_),space_(gridpart_),usemeancurvflow_(useMeanCurvFlow)
   {}
 
@@ -84,8 +84,8 @@ class FemSchemeInterface
   private:
   GridType& grid_;
   GridPartType gridpart_;
-  DiscreteSpaceType space_;
-  const bool& usemeancurvflow_;
+  const DiscreteSpaceType space_;
+  const bool usemeancurvflow_;
 };
 
 }

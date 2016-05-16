@@ -25,7 +25,7 @@ void computeInterface(FemSchemeType& femScheme)
   // get grid
   auto& grid(femScheme.grid());
 
-  // get space
+  // create solution
   typedef typename FemSchemeType::DiscreteFunctionType DiscreteFunctionType;
   DiscreteFunctionType solution("solution",femScheme.space());
   solution.clear();
@@ -79,11 +79,10 @@ void computeInterface(FemSchemeType& femScheme)
       else
         std::cout<<"Interface is NOT stationary."<<std::endl;
     }
-    // update grid and solution
+    // update grid
     auto coordIt(grid.coordFunction().discreteFunction().dbegin());
     for(auto displacementIt=displacementItBegin;displacementIt!=displacementItEnd;++displacementIt,++coordIt)
       (*coordIt)+=(*displacementIt);
-
     // stop timer
     timer.stop();
     std::cout<<"Time elapsed for assembling and solving : "<<timer.elapsed()<<" seconds."<<std::endl;

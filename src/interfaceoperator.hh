@@ -32,7 +32,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
   typedef typename LinearOperatorType::MatrixType MatrixType;
   typedef InterfaceOperator<LinearOperatorType,TimeProviderType> ThisType;
 
-  explicit InterfaceOperator(const DiscreteSpaceType& space,const TimeProviderType& timeProvider,const bool& useMeanCurvFlow):
+  explicit InterfaceOperator(const DiscreteSpaceType& space,const TimeProviderType& timeProvider,bool useMeanCurvFlow):
     space_(space),timeprovider_(timeProvider),op_("interface operator",space_,space_),usemeancurvflow_(useMeanCurvFlow)
   {}
 
@@ -64,7 +64,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
     return op_;
   }
 
-  void assemble() const
+  void assemble()
   {
     // allocate matrix
     DiagonalAndNeighborStencil<DiscreteSpaceType,DiscreteSpaceType> stencil(space_,space_);
@@ -158,8 +158,8 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
   private:
   const DiscreteSpaceType& space_;
   const TimeProviderType& timeprovider_;
-  mutable LinearOperatorType op_;
-  const bool& usemeancurvflow_;
+  LinearOperatorType op_;
+  const bool usemeancurvflow_;
 };
 
 }

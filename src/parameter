@@ -16,7 +16,7 @@ fem.timeprovider.fixedtimestep: 0.1
 # time used for initializing the starting time (default: 0.0)
 fem.timeprovider.starttime: 0.0
 
-# end time (default: 0.1)
+# end time (default: 1.0)
 EndTime: 30.0
 
 # use mean curvature flow (default: 0)
