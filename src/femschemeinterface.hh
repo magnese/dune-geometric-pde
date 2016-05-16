@@ -29,19 +29,19 @@ class FemSchemeInterface
 
   // define spaces and functions
   typedef FunctionSpace<double,double,GridType::dimensionworld,1> CurvatureContinuosSpaceType;
-  typedef FunctionSpace<double,double,GridType::dimensionworld,GridType::dimensionworld> PositionContinuosSpaceType;
+  typedef FunctionSpace<double,double,GridType::dimensionworld,GridType::dimensionworld> DisplacementContinuosSpaceType;
   typedef LagrangeDiscreteFunctionSpace<CurvatureContinuosSpaceType,GridPartType,POLORDER> CurvatureDiscreteSpaceType;
-  typedef LagrangeDiscreteFunctionSpace<PositionContinuosSpaceType,GridPartType,POLORDER> PositionDiscreteSpaceType;
-  typedef TupleDiscreteFunctionSpace<CurvatureDiscreteSpaceType,PositionDiscreteSpaceType> CombinedDiscreteSpaceType;
-  typedef AdaptiveDiscreteFunction<CombinedDiscreteSpaceType> CombinedDiscreteFunctionType;
+  typedef LagrangeDiscreteFunctionSpace<DisplacementContinuosSpaceType,GridPartType,POLORDER> DisplacementDiscreteSpaceType;
+  typedef TupleDiscreteFunctionSpace<CurvatureDiscreteSpaceType,DisplacementDiscreteSpaceType> DiscreteSpaceType;
+  typedef AdaptiveDiscreteFunction<DiscreteSpaceType> DiscreteFunctionType;
 
   // define operator and rhs
-  typedef SparseRowLinearOperator<CombinedDiscreteFunctionType,CombinedDiscreteFunctionType> LinearOperatorType;
+  typedef SparseRowLinearOperator<DiscreteFunctionType,DiscreteFunctionType> LinearOperatorType;
   typedef InterfaceOperator<LinearOperatorType> InterfaceOperatorType;
-  typedef InterfaceRHS<CombinedDiscreteFunctionType> InterfaceRHSType;
+  typedef InterfaceRHS<DiscreteFunctionType> InterfaceRHSType;
 
   // define inverse operator
-  typedef UMFPACKOp<CombinedDiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
+  typedef UMFPACKOp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
 
   // define time provider
   typedef TimeProviderImp TimeProviderType;
@@ -60,13 +60,13 @@ class FemSchemeInterface
   {
     return gridpart_;
   }
-  const CombinedDiscreteSpaceType& space() const
+  const DiscreteSpaceType& space() const
   {
     return space_;
   }
 
   // setup and solve the linear system
-  void operator()(CombinedDiscreteFunctionType& solution,const TimeProviderType& timeProvider)
+  void operator()(DiscreteFunctionType& solution,const TimeProviderType& timeProvider)
   {
     // clear solution
     solution.clear();
@@ -84,7 +84,7 @@ class FemSchemeInterface
   private:
   GridType& grid_;
   GridPartType gridpart_;
-  CombinedDiscreteSpaceType space_;
+  DiscreteSpaceType space_;
   const bool& usemeancurvflow_;
 };
 

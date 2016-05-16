@@ -26,28 +26,26 @@ void computeInterface(FemSchemeType& femScheme)
   auto& grid(femScheme.grid());
 
   // get space
-  typedef typename FemSchemeType::CombinedDiscreteFunctionType CombinedDiscreteFunctionType;
-  CombinedDiscreteFunctionType solution("solution",femScheme.space());
+  typedef typename FemSchemeType::DiscreteFunctionType DiscreteFunctionType;
+  DiscreteFunctionType solution("solution",femScheme.space());
   solution.clear();
 
   // output number of dofs
   const auto numDofsCurvature(femScheme.space().template subDiscreteFunctionSpace<0>().size());
-  const auto numDofsPosition(femScheme.space().template subDiscreteFunctionSpace<1>().size());
-  std::cout<<"Solving for "<<numDofsCurvature<<" unkowns for curvature and "<<numDofsPosition<<" unkowns for position."<<std::endl;
+  const auto numDofsDisplacement(femScheme.space().template subDiscreteFunctionSpace<1>().size());
+  std::cout<<"Solving for "<<numDofsCurvature<<" unkowns for curvature and "<<numDofsDisplacement<<" unkowns for displacement."<<std::endl;
 
   // create structure to dump on file
-  typedef std::tuple<const CombinedDiscreteFunctionType*> IOTupleType;
-  IOTupleType ioTuple(&solution);
-  typedef DataOutput<typename FemSchemeType::GridType,IOTupleType> DataOutputType;
-  DataOutputType dataOutput(grid,ioTuple);
+  auto ioTuple(std::make_tuple(&solution));
+  DataOutput<typename FemSchemeType::GridType,decltype(ioTuple)> dataOutput(grid,ioTuple);
 
   // dump bulk solution at t0 and advance time provider
   dataOutput.write(timeProvider);
   timeProvider.next();
 
   // extract iterators which point to the first and to the last dof of position
-  const auto positionItBegin(std::next(solution.dbegin(),numDofsCurvature));
-  const auto positionItEnd(solution.dend());
+  const auto displacementItBegin(std::next(solution.dbegin(),numDofsCurvature));
+  const auto displacementItEnd(solution.dend());
 
   // enable/disable check interface is stationary
   bool interfaceStationary(true);
@@ -70,9 +68,12 @@ void computeInterface(FemSchemeType& femScheme)
     if(createStationaryInterface)
     {
       interfaceStationary=true;
-      for(auto positionIt=positionItBegin;positionIt!=positionItEnd&&interfaceStationary;++positionIt)
-        if(std::abs(*positionIt)>1.e-15)
+      for(auto displacementIt=displacementItBegin;displacementIt!=displacementItEnd;++displacementIt)
+        if(std::abs(*displacementIt)>1.e-15)
+        {
           interfaceStationary=false;
+          break;
+        }
       if(interfaceStationary)
         std::cout<<"Interface is stationary."<<std::endl;
       else
@@ -80,11 +81,9 @@ void computeInterface(FemSchemeType& femScheme)
     }
     // update grid and solution
     auto coordIt(grid.coordFunction().discreteFunction().dbegin());
-    for(auto positionIt=positionItBegin;positionIt!=positionItEnd;++positionIt,++coordIt)
-    {
-      (*coordIt)+=(*positionIt); // X+dX
-      (*positionIt)=(*coordIt); // dump on file X instead of dX
-    }
+    for(auto displacementIt=displacementItBegin;displacementIt!=displacementItEnd;++displacementIt,++coordIt)
+      (*coordIt)+=(*displacementIt);
+
     // stop timer
     timer.stop();
     std::cout<<"Time elapsed for assembling and solving : "<<timer.elapsed()<<" seconds."<<std::endl;
