@@ -4,14 +4,14 @@
 #include <dune/fem/gridpart/leafgridpart.hh>
 #include <dune/fem/space/common/functionspace.hh>
 #include <dune/fem/space/lagrange.hh>
-#include <dune/fem/space/combinedspace.hh>
+#include <dune/fem/function/tuplediscretefunction.hh>
 #include <dune/fem/function/adaptivefunction.hh>
 #include <dune/fem/operator/linear/spoperator.hh>
 #include <dune/fem/solver/umfpacksolver.hh>
 #include <dune/fem/solver/timeprovider.hh>
 
 #include "interfaceoperator.hh"
-#include "interfacerhs.hh"
+#include "assembleinterfacerhs.hh"
 
 namespace Dune
 {
@@ -32,13 +32,14 @@ class FemSchemeInterface
   typedef FunctionSpace<double,double,GridType::dimensionworld,GridType::dimensionworld> DisplacementContinuosSpaceType;
   typedef LagrangeDiscreteFunctionSpace<CurvatureContinuosSpaceType,GridPartType,POLORDER> CurvatureDiscreteSpaceType;
   typedef LagrangeDiscreteFunctionSpace<DisplacementContinuosSpaceType,GridPartType,POLORDER> DisplacementDiscreteSpaceType;
-  typedef TupleDiscreteFunctionSpace<CurvatureDiscreteSpaceType,DisplacementDiscreteSpaceType> DiscreteSpaceType;
-  typedef AdaptiveDiscreteFunction<DiscreteSpaceType> DiscreteFunctionType;
+  typedef AdaptiveDiscreteFunction<CurvatureDiscreteSpaceType> CurvatureDiscreteFunctionType;
+  typedef AdaptiveDiscreteFunction<DisplacementDiscreteSpaceType> DisplacementDiscreteFunctionType;
+  typedef TupleDiscreteFunction<CurvatureDiscreteFunctionType,DisplacementDiscreteFunctionType> DiscreteFunctionType;
+  typedef typename DiscreteFunctionType::DiscreteFunctionSpaceType DiscreteSpaceType;
 
-  // define operator and rhs
+  // define operator
   typedef SparseRowLinearOperator<DiscreteFunctionType,DiscreteFunctionType> LinearOperatorType;
   typedef InterfaceOperator<LinearOperatorType> InterfaceOperatorType;
-  typedef InterfaceRHS<DiscreteFunctionType> InterfaceRHSType;
 
   // define inverse operator
   typedef UMFPACKOp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
@@ -74,11 +75,11 @@ class FemSchemeInterface
     InterfaceOperatorType op(space_,timeProvider,usemeancurvflow_);
     op.assemble();
     // assemble rhs
-    InterfaceRHSType RHS(space_);
-    RHS.assemble(op);
+    DiscreteFunctionType rhs("interface RHS",space_);
+    assembleInterfaceRHS(rhs,op);
     // solve the linear system
     InterfaceInverseOperatorType interfaceInvOp(op);
-    interfaceInvOp(RHS.rhs(),solution);
+    interfaceInvOp(rhs,solution);
   }
 
   private:

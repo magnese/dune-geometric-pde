@@ -29,23 +29,20 @@ void computeInterface(FemSchemeType& femScheme)
   typedef typename FemSchemeType::DiscreteFunctionType DiscreteFunctionType;
   DiscreteFunctionType solution("solution",femScheme.space());
   solution.clear();
-
-  // output number of dofs
-  const auto numDofsCurvature(femScheme.space().template subDiscreteFunctionSpace<0>().size());
-  const auto numDofsDisplacement(femScheme.space().template subDiscreteFunctionSpace<1>().size());
-  std::cout<<"Solving for "<<numDofsCurvature<<" unkowns for curvature and "<<numDofsDisplacement<<" unkowns for displacement."<<std::endl;
+  auto& curvature(solution.template subDiscreteFunction<0>());
+  curvature.name()="curvature";
+  auto& displacement(solution.template subDiscreteFunction<1>());
+  displacement.name()="displacement";
+  std::cout<<"Solving for "<<curvature.size()<<" unkowns for "<<curvature.name()<<" and "<<displacement.size()<<" unkowns for "<<
+    displacement.name()<<std::endl;
 
   // create structure to dump on file
-  auto ioTuple(std::make_tuple(&solution));
+  auto ioTuple(std::make_tuple(&curvature));
   DataOutput<typename FemSchemeType::GridType,decltype(ioTuple)> dataOutput(grid,ioTuple);
 
   // dump bulk solution at t0 and advance time provider
   dataOutput.write(timeProvider);
   timeProvider.next();
-
-  // extract iterators which point to the first and to the last dof of position
-  const auto displacementItBegin(std::next(solution.dbegin(),numDofsCurvature));
-  const auto displacementItEnd(solution.dend());
 
   // enable/disable check interface is stationary
   bool interfaceStationary(true);
@@ -68,8 +65,8 @@ void computeInterface(FemSchemeType& femScheme)
     if(createStationaryInterface)
     {
       interfaceStationary=true;
-      for(auto displacementIt=displacementItBegin;displacementIt!=displacementItEnd;++displacementIt)
-        if(std::abs(*displacementIt)>1.e-15)
+      for(const auto& dof:dofs(displacement))
+        if(std::abs(dof)>1.e-15)
         {
           interfaceStationary=false;
           break;
@@ -80,9 +77,7 @@ void computeInterface(FemSchemeType& femScheme)
         std::cout<<"Interface is NOT stationary."<<std::endl;
     }
     // update grid
-    auto coordIt(grid.coordFunction().discreteFunction().dbegin());
-    for(auto displacementIt=displacementItBegin;displacementIt!=displacementItEnd;++displacementIt,++coordIt)
-      (*coordIt)+=(*displacementIt);
+    grid.coordFunction()+=displacement;
     // stop timer
     timer.stop();
     std::cout<<"Time elapsed for assembling and solving : "<<timer.elapsed()<<" seconds."<<std::endl;
