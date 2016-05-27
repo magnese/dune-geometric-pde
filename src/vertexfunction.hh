@@ -44,6 +44,11 @@ class VertexFunction:public DiscreteCoordFunction<typename GridImp::ctype,GridIm
 
   VertexFunction(const ThisType& )=delete;
 
+  ThisType& operator=(const ThisType& other)
+  {
+    operator=(other.discreteFunction());
+  }
+
   DiscreteFunctionType& discreteFunction()
   {
     return coord_;
