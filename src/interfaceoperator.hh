@@ -4,9 +4,9 @@
 #include <dune/geometry/referenceelements.hh>
 #include <dune/fem/operator/common/operator.hh>
 #include <dune/fem/operator/common/stencil.hh>
+#include <dune/fem/operator/linear/spoperator.hh>
 #include <dune/fem/quadrature/cachingquadrature.hh>
 #include <dune/fem/quadrature/lumpingquadrature.hh>
-#include <dune/fem/solver/timeprovider.hh>
 
 #include "normal.hh"
 
@@ -19,21 +19,20 @@ namespace Dune
 namespace Fem
 {
 
-template<typename LinearOperatorImp,typename TimeProviderImp=FixedStepTimeProvider<>>
-class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFunctionType,typename LinearOperatorImp::RangeFunctionType>
+template<typename DiscreteFunctionImp,template<typename ,typename > typename LinearOperatorImp=SparseRowLinearOperator>
+class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
 {
   public:
-  typedef LinearOperatorImp LinearOperatorType;
-  typedef TimeProviderImp TimeProviderType;
-  typedef typename LinearOperatorType::DomainFunctionType DomainFunctionType;
-  typedef typename LinearOperatorType::RangeFunctionType RangeFunctionType;
-  typedef DomainFunctionType DiscreteFunctionType;
+  typedef DiscreteFunctionImp DiscreteFunctionType;
+  typedef LinearOperatorImp<DiscreteFunctionType,DiscreteFunctionType> LinearOperatorType;
+  typedef DiscreteFunctionType DomainFunctionType;
+  typedef DomainFunctionType RangeFunctionType;
   typedef typename DiscreteFunctionType::DiscreteFunctionSpaceType DiscreteSpaceType;
   typedef typename LinearOperatorType::MatrixType MatrixType;
-  typedef InterfaceOperator<LinearOperatorType,TimeProviderType> ThisType;
+  typedef InterfaceOperator<DiscreteFunctionType,LinearOperatorImp> ThisType;
 
-  explicit InterfaceOperator(const DiscreteSpaceType& space,const TimeProviderType& timeProvider,bool useMeanCurvFlow):
-    space_(space),timeprovider_(timeProvider),op_("interface operator",space_,space_),usemeancurvflow_(useMeanCurvFlow)
+  explicit InterfaceOperator(const DiscreteSpaceType& space,bool useMeanCurvFlow):
+    space_(space),op_("interface operator",space_,space_),usemeancurvflow_(useMeanCurvFlow)
   {}
 
   InterfaceOperator(const ThisType& )=delete;
@@ -64,7 +63,8 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
     return op_;
   }
 
-  void assemble()
+  template<typename TimeProviderType>
+  void assemble(const TimeProviderType& timeProvider)
   {
     // allocate matrix
     DiagonalAndNeighborStencil<DiscreteSpaceType,DiscreteSpaceType> stencil(space_,space_);
@@ -111,7 +111,7 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
               value=phi[i][0]*phi[j][0];
             else
               value=gradphi[i][0]*gradphi[j][0];
-            value*=weight*timeprovider_.deltaT(); // value=0.0 means v=0
+            value*=weight*timeProvider.deltaT(); // value=0.0 means v=0
             localMatrix.add(i,j,value);
           }
         }
@@ -157,7 +157,6 @@ class InterfaceOperator:public Operator<typename LinearOperatorImp::DomainFuncti
 
   private:
   const DiscreteSpaceType& space_;
-  const TimeProviderType& timeprovider_;
   LinearOperatorType op_;
   const bool usemeancurvflow_;
 };

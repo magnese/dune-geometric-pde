@@ -6,9 +6,7 @@
 #include <dune/fem/space/lagrange.hh>
 #include <dune/fem/function/tuplediscretefunction.hh>
 #include <dune/fem/function/adaptivefunction.hh>
-#include <dune/fem/operator/linear/spoperator.hh>
 #include <dune/fem/solver/umfpacksolver.hh>
-#include <dune/fem/solver/timeprovider.hh>
 
 #include "interfaceoperator.hh"
 #include "assembleinterfacerhs.hh"
@@ -18,7 +16,7 @@ namespace Dune
 namespace Fem
 {
 
-template<typename GridImp,typename TimeProviderImp=FixedStepTimeProvider<>>
+template<typename GridImp>
 class FemSchemeInterface
 {
   public:
@@ -38,14 +36,10 @@ class FemSchemeInterface
   typedef typename DiscreteFunctionType::DiscreteFunctionSpaceType DiscreteSpaceType;
 
   // define operator
-  typedef SparseRowLinearOperator<DiscreteFunctionType,DiscreteFunctionType> LinearOperatorType;
-  typedef InterfaceOperator<LinearOperatorType> InterfaceOperatorType;
+  typedef InterfaceOperator<DiscreteFunctionType> InterfaceOperatorType;
 
   // define inverse operator
   typedef UMFPACKOp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
-
-  // define time provider
-  typedef TimeProviderImp TimeProviderType;
 
   explicit FemSchemeInterface(GridType& grid,bool useMeanCurvFlow):
     grid_(grid),gridpart_(grid_),space_(gridpart_),usemeancurvflow_(useMeanCurvFlow)
@@ -66,14 +60,15 @@ class FemSchemeInterface
     return space_;
   }
 
-  // setup and solve the linear system
+  // compute solution
+  template<typename TimeProviderType>
   void operator()(DiscreteFunctionType& solution,const TimeProviderType& timeProvider)
   {
     // clear solution
     solution.clear();
     // assemble operator
-    InterfaceOperatorType op(space_,timeProvider,usemeancurvflow_);
-    op.assemble();
+    InterfaceOperatorType op(space_,usemeancurvflow_);
+    op.assemble(timeProvider);
     // assemble rhs
     DiscreteFunctionType rhs("interface RHS",space_);
     assembleInterfaceRHS(rhs,op);
