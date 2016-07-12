@@ -71,14 +71,14 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
     op_.reserve(stencil);
     op_.clear();
     // allocate local basis
-    const auto blockSize(DiscreteSpaceType::localBlockSize);
+    constexpr std::size_t blockSize(DiscreteSpaceType::localBlockSize);
     typedef typename DiscreteFunctionType::LocalFunctionType::RangeType LocalFunctionRangeType;
     std::vector<LocalFunctionRangeType> phi(space_.blockMapper().maxNumDofs()*blockSize );
     typedef typename DiscreteFunctionType::LocalFunctionType::JacobianRangeType LocalFunctionJacobianRangeType;
     std::vector<LocalFunctionJacobianRangeType> gradphi(space_.blockMapper().maxNumDofs()*blockSize);
     // extract dimensions
-    constexpr auto worlddim(DiscreteSpaceType::GridType::dimensionworld);
-    constexpr auto rangedim(DiscreteSpaceType::FunctionSpaceType::dimRange);
+    constexpr unsigned int worlddim(DiscreteSpaceType::GridType::dimensionworld);
+    constexpr unsigned int rangedim(DiscreteSpaceType::FunctionSpaceType::dimRange);
     // define normal
     typedef typename DiscreteSpaceType::RangeFieldType RangeFieldType;
     typedef typename DiscreteSpaceType::GridType::ctype ctype;
@@ -102,9 +102,9 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         baseSet.jacobianAll(qp,gradphi);
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
         // fill A_m
-        for(std::size_t i=0;i!=worlddim;++i)
+        for(auto i=decltype(worlddim){0};i!=worlddim;++i)
         {
-          for(std::size_t j=0;j!=worlddim;++j)
+          for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
             if(usemeancurvflow_)
@@ -118,12 +118,12 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         // fill \vec{A_m}
         const auto columnLocalSize(localMatrix.columns());
         const auto rowLocalSize(localMatrix.rows());
-        for(std::size_t i=worlddim;i!=rowLocalSize;++i)
+        for(auto i=worlddim;i!=rowLocalSize;++i)
         {
-          for(std::size_t j=worlddim;j!=columnLocalSize;++j)
+          for(auto j=worlddim;j!=columnLocalSize;++j)
           {
             RangeFieldType value(0.0);
-            for(std::size_t k=1;k!=rangedim;++k)
+            for(auto k=decltype(rangedim){1};k!=rangedim;++k)
               value+=gradphi[i][k]*gradphi[j][k];
             value*=weight;
             localMatrix.add(i,j,value);
@@ -139,12 +139,12 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
         // fill \vec{N_m}
         const auto rowLocalSize(localMatrix.rows());
-        for(std::size_t i=worlddim;i!=rowLocalSize;++i)
+        for(auto i=worlddim;i!=rowLocalSize;++i)
         {
-          for(std::size_t j=0;j!=worlddim;++j)
+          for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
-            for(std::size_t index=0;index!=worlddim;++index)
+            for(auto index=decltype(worlddim){0};index!=worlddim;++index)
               value+=phi[i][index+1]*normalVector[index];
             value*=weight*phi[j][0];
             localMatrix.add(i,j,value);
