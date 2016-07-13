@@ -118,9 +118,9 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         // fill \vec{A_m}
         const auto columnLocalSize(localMatrix.columns());
         const auto rowLocalSize(localMatrix.rows());
-        for(auto i=worlddim;i!=rowLocalSize;++i)
+        for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
         {
-          for(auto j=worlddim;j!=columnLocalSize;++j)
+          for(auto j=decltype(columnLocalSize){worlddim};j!=columnLocalSize;++j)
           {
             RangeFieldType value(0.0);
             for(auto k=decltype(rangedim){1};k!=rangedim;++k)
@@ -139,7 +139,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
         // fill \vec{N_m}
         const auto rowLocalSize(localMatrix.rows());
-        for(auto i=worlddim;i!=rowLocalSize;++i)
+        for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
         {
           for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {
