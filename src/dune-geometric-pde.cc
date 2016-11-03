@@ -34,7 +34,7 @@ int main(int argc,char** argv)
     // init
     Dune::Fem::MPIManager::initialize(argc,argv);
     Dune::Fem::Parameter::append(argc,argv);
-    Dune::Fem::Parameter::append((argc<2)?("/home/ma/m/ma2413/dune-repo/dune-geometric-pde/src/parameter"):(argv[1]));
+    Dune::Fem::Parameter::append(argc<2?(static_cast<std::string>(SOURCEDIR)+"/src/parameter"):argv[1]);
 
     // load host grid
     typedef Dune::GridSelector::GridType HostGridType;
