@@ -1,17 +1,13 @@
 # mesh filename (default: mesh.msh)
-FileName: /home/ma/m/ma2413/mshfiles/simple/1D/ellipse.msh
+FileName: /simple/1D/ellipse.msh
+#FileName: /simple/2D/cube.msh
+#FileName: /simple/2D/sphere.msh
+#FileName: /simple/2D/ellipsoid.msh
+#FileName: /simple/2D/cigar.msh
+#FileName: /simple/2D/cage.msh
 
-#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cube.msh
-#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/sphere.msh
-#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/ellipsoid.msh
-#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cigar.msh
-#FileName: /home/ma/m/ma2413/mshfiles/simple/2D/cage.msh
-
-# time step (default: 0.1)
-fem.timeprovider.fixedtimestep: 0.1
-
-# multiplication factor to use for each time step (default: 1.0)
-#fem.timeprovider.factor: 1.0
+# time step
+fem.timeprovider.fixedtimestep: 1.e-1
 
 # time used for initializing the starting time (default: 0.0)
 fem.timeprovider.starttime: 0.0

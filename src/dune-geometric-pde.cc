@@ -38,7 +38,7 @@ int main(int argc,char** argv)
 
     // load host grid
     typedef Dune::GridSelector::GridType HostGridType;
-    const std::string fileName(Dune::Fem::Parameter::getValue<std::string>("FileName","mesh.msh"));
+    const std::string fileName(static_cast<std::string>(MSHFILESDIR)+Dune::Fem::Parameter::getValue<std::string>("FileName","mesh.msh"));
     Dune::GridFactory<HostGridType> hostGridFactory;
     std::vector<int> boundaryIDs(0);
     std::vector<int> elementsIDs(0);
@@ -51,7 +51,7 @@ int main(int argc,char** argv)
 
     // load parameter
     const bool useMeanCurvatureFlow(Dune::Fem::Parameter::getValue<bool>("UseMeanCurvatureFlow",0));
-    const std::string fileNameFinalMesh(Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
+    const std::string fileNameFinalMesh(static_cast<std::string>(MSHFILESDIR)+Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
     if(useMeanCurvatureFlow)
       std::cout<<"Problem type: mean curvature flow."<<std::endl;
     else
@@ -63,7 +63,7 @@ int main(int argc,char** argv)
     Dune::Fem::computeInterface<FemSchemeType>(femScheme);
 
     // dump final mesh as msh
-    if(fileNameFinalMesh!="")
+    if(fileNameFinalMesh!=static_cast<std::string>(MSHFILESDIR))
     {
       Dune::GmshWriter<typename GridType::LeafGridView> gmshWriter(grid.leafGridView());
       gmshWriter.setPrecision(15);
