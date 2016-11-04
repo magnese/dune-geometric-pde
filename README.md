@@ -7,7 +7,7 @@ curvature flow and the surface diffusion problem in 2D and 3D domains.
 
 It is based on the scheme described in the paper
 
-[J.W.#Barrett, H.~Garcke and R.~N\"urnberg: A parametric finite element method
+[J.W.~Barrett, H.~Garcke and R.~N\"urnberg: A parametric finite element method
 for fourth order geometric evolution equations, J. Comput. Phys. 222 (2007),
 441--467.][2]
 
@@ -24,7 +24,7 @@ Installation
 
 For installation instructions please see the [DUNE website][4].
 
-[0]: https://github.com/magnese/
+[0]: https://github.com/magnese/dune-repo/blob/master/dune-geometric-pde/
 [1]: https://www.dune-project.org/
 [2]: http://www.sciencedirect.com/science/article/pii/S0021999106003615
 [3]: https://github.com/magnese/dune-repo/blob/master/dune-geometric-pde/LICENSE.md

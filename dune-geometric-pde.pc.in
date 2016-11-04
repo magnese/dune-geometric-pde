@@ -9,7 +9,7 @@ DEPENDENCIES=@REQUIRES@
 Name: @PACKAGE_NAME@
 Version: @VERSION@
 Description: dune-geometric-pde module
-URL: https://github.com/magnese/
+URL: https://github.com/magnese/dune-repo/blob/master/dune-geometric-pde/
 Requires: dune-fem
 Libs: -L${libdir}
 Cflags: -I${includedir}
