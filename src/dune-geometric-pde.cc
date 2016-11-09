@@ -1,13 +1,8 @@
-#define GRIDDIM ALBERTA_DIM-1
-#define WORLDDIM ALBERTA_DIM
-
-#define ALBERTAGRID // the mesh file must be oriented consistently since it does not perform any check
-//#define ALUGRID_SIMPLEX
-
 #define POLORDER 1
 
 #include "config.h"
 #include <dune/common/timer.hh>
+#include <dune/grid/albertagrid.hh>
 #include <dune/grid/io/file/gmshreader.hh>
 #include <dune/grid/io/file/gmshwriter.hh>
 #include <dune/grid/common/gridfactory.hh>
@@ -37,7 +32,7 @@ int main(int argc,char** argv)
     Dune::Fem::Parameter::append(argc<2?(static_cast<std::string>(SOURCEDIR)+"/src/parameter"):argv[1]);
 
     // load host grid
-    typedef Dune::GridSelector::GridType HostGridType;
+    typedef Dune::AlbertaGrid<GRIDDIM,WORLDDIM> HostGridType;
     const std::string fileName(static_cast<std::string>(MSHFILESDIR)+Dune::Fem::Parameter::getValue<std::string>("FileName","mesh.msh"));
     Dune::GridFactory<HostGridType> hostGridFactory;
     std::vector<int> boundaryIDs(0);
