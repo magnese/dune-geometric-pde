@@ -1,18 +1,16 @@
 #ifndef DUNE_FEM_INTERFACEOPERATOR_HH
 #define DUNE_FEM_INTERFACEOPERATOR_HH
 
-#include <dune/geometry/referenceelements.hh>
 #include <dune/fem/operator/common/operator.hh>
 #include <dune/fem/operator/common/stencil.hh>
 #include <dune/fem/operator/linear/spoperator.hh>
-#include <dune/fem/quadrature/cachingquadrature.hh>
 #include <dune/fem/quadrature/lumpingquadrature.hh>
 
 #include "normal.hh"
 
 #include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace Dune
 {
@@ -92,18 +90,19 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
       normal(entity,normalVector);
       // extract local matrix and basis functions
       auto localMatrix(op_.localMatrix(entity,entity));
+      const auto columnLocalSize(localMatrix.columns());
+      const auto rowLocalSize(localMatrix.rows());
       const auto& baseSet(localMatrix.domainBasisFunctionSet());
-      // assemble local A_m (curvature) and local \vec{A_m} (position)
-      CachingQuadrature<typename DiscreteSpaceType::GridPartType,0> quadrature(entity,2*space_.order()+1);
+      // assemble local matrix
+      CachingLumpingQuadrature<typename DiscreteSpaceType::GridPartType,0> quadrature(entity);
       for(const auto& qp:quadrature)
       {
         // evaluate basis functions and weight
         baseSet.evaluateAll(qp,phi);
         baseSet.jacobianAll(qp,gradphi);
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
-        // fill A_m
+        // fill A_m (curvature)
         for(auto i=decltype(worlddim){0};i!=worlddim;++i)
-        {
           for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
@@ -114,12 +113,8 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
             value*=weight*timeProvider.deltaT(); // value=0.0 means v=0
             localMatrix.add(i,j,value);
           }
-        }
-        // fill \vec{A_m}
-        const auto columnLocalSize(localMatrix.columns());
-        const auto rowLocalSize(localMatrix.rows());
+        // fill \vec{A_m} (position)
         for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
-        {
           for(auto j=decltype(columnLocalSize){worlddim};j!=columnLocalSize;++j)
           {
             RangeFieldType value(0.0);
@@ -128,19 +123,8 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
             value*=weight;
             localMatrix.add(i,j,value);
           }
-        }
-      }
-      // assemble local \vec{N_m} (curvature_j-position_i)
-      CachingLumpingQuadrature<typename DiscreteSpaceType::GridPartType,0> lumpingQuadrature(entity);
-      for(const auto& qp:lumpingQuadrature)
-      {
-        // evaluate basis functions and weight
-        baseSet.evaluateAll(qp,phi);
-        const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
-        // fill \vec{N_m}
-        const auto rowLocalSize(localMatrix.rows());
+        // fill \vec{N_m} (curvature_j-position_i) and -\vec{N_m}^T
         for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
-        {
           for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {
             RangeFieldType value(0.0);
@@ -150,7 +134,6 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
             localMatrix.add(i,j,value);
             localMatrix.add(j,i,-1.0*value);
           }
-        }
       }
     }
   }
