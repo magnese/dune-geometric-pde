@@ -34,7 +34,7 @@ void computeInterface(FemSchemeType& femScheme)
   auto& displacement(solution.template subDiscreteFunction<1>());
   displacement.name()="displacement";
   std::cout<<"Solving for "<<curvature.size()<<" unkowns for "<<curvature.name()<<" and "<<displacement.size()<<" unkowns for "<<
-    displacement.name()<<std::endl;
+    displacement.name()<<"\n";
 
   // create structure to dump on file
   auto ioTuple(std::make_tuple(&curvature));
@@ -48,14 +48,14 @@ void computeInterface(FemSchemeType& femScheme)
   bool interfaceStationary(true);
   const bool createStationaryInterface(Parameter::getValue<bool>("CreateStationaryInterface",0));
   if(createStationaryInterface)
-    std::cout<<std::endl<<"WARNING: the scheme will run until the interface is stationary!"<<std::endl;
+    std::cout<<"\nWARNING: the scheme will run until the interface is stationary!\n";
 
   // solve
   const double endTime(Parameter::getValue<double>("EndTime",1.0)+0.1*timeProvider.deltaT());
   for(;(timeProvider.time()<=endTime)||(!interfaceStationary);timeProvider.next())
   {
     // print time
-    std::cout<<std::endl<<"Time step "<<timeProvider.timeStep()<<" (time = "<<timeProvider.time()<<" s)."<<std::endl;
+    std::cout<<"\nTime step "<<timeProvider.timeStep()<<" (time = "<<timeProvider.time()<<" s).\n";
     // start timer
     Timer timer(false);
     timer.start();
@@ -72,15 +72,15 @@ void computeInterface(FemSchemeType& femScheme)
           break;
         }
       if(interfaceStationary)
-        std::cout<<"Interface is stationary."<<std::endl;
+        std::cout<<"Interface is stationary.\n";
       else
-        std::cout<<"Interface is NOT stationary."<<std::endl;
+        std::cout<<"Interface is NOT stationary.\n";
     }
     // update grid
     grid.coordFunction()+=displacement;
     // stop timer
     timer.stop();
-    std::cout<<"Time elapsed for assembling and solving : "<<timer.elapsed()<<" seconds."<<std::endl;
+    std::cout<<"Time elapsed for assembling and solving : "<<timer.elapsed()<<" seconds.\n";
     // dump solution on file
     dataOutput.write(timeProvider);
   }

@@ -49,9 +49,9 @@ int main(int argc,char** argv)
     const std::string fileNameFinalMesh(static_cast<std::string>(MSHFILESDIR)+
       Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
     if(useMeanCurvatureFlow)
-      std::cout<<"Problem type: mean curvature flow."<<std::endl;
+      std::cout<<"Problem type: mean curvature flow.\n";
     else
-      std::cout<<"Problem type: surface diffusion."<<std::endl;
+      std::cout<<"Problem type: surface diffusion.\n";
 
     // compute solution
     typedef Dune::Fem::FemSchemeInterface<GridType> FemSchemeType;
@@ -64,12 +64,12 @@ int main(int argc,char** argv)
       Dune::GmshWriter<typename GridType::LeafGridView> gmshWriter(grid.leafGridView());
       gmshWriter.setPrecision(15);
       gmshWriter.write(fileNameFinalMesh,elementsIDs);
-      std::cout<<std::endl<<"Final mesh dumped into "<<fileNameFinalMesh<<"."<<std::endl;
+      std::cout<<"\nFinal mesh dumped into "<<fileNameFinalMesh<<".\n";
     }
 
     // output total running time
     timer.stop();
-    std::cout<<std::endl<<"Total running time: "<<timer.elapsed()<<" seconds."<<std::endl;
+    std::cout<<"\nTotal running time: "<<timer.elapsed()<<" seconds.\n";
 
     return 0;
   }
@@ -81,7 +81,7 @@ int main(int argc,char** argv)
 
   catch(...)
   {
-    std::cerr<<"Unknown exception thrown!"<<std::endl;
+    std::cerr<<"Unknown exception thrown!\n";
     exit(1);
   }
 }

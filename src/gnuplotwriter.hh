@@ -46,7 +46,7 @@ struct GnuplotWriter
       std::ofstream file(filename_);
       file<<std::setprecision(precision_);
       for(const auto& value:values_)
-        file<<std::get<0>(value)<<" "<<std::get<1>(value)<<std::endl;
+        file<<std::get<0>(value)<<" "<<std::get<1>(value)<<"\n";
     }
   }
 
