@@ -89,7 +89,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
       const auto rowLocalSize(localMatrix.rows());
       const auto& baseSet(localMatrix.domainBasisFunctionSet());
       // assemble local matrix
-      CachingLumpingQuadrature<typename DiscreteSpaceType::GridPartType,0> quadrature(entity);
+      const CachingLumpingQuadrature<typename DiscreteSpaceType::GridPartType,0> quadrature(entity);
       for(const auto& qp:quadrature)
       {
         // evaluate basis functions and weight
