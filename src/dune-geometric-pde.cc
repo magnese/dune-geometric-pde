@@ -46,7 +46,7 @@ int main(int argc,char** argv)
 
     // load parameter
     const bool useMeanCurvatureFlow(Dune::Fem::Parameter::getValue<bool>("UseMeanCurvatureFlow",0));
-    const std::string fileNameFinalMesh(static_cast<std::string>(MSHFILESDIR)+
+    const std::string fileNameFinalMesh(Dune::Fem::Parameter::getValue<std::string>("fem.prefix",".")+"/"+
       Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
     if(useMeanCurvatureFlow)
       std::cout<<"Problem type: mean curvature flow.\n";

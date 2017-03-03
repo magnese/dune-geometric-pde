@@ -1,6 +1,7 @@
 #ifndef DUNE_FEM_INTERFACEOPERATOR_HH
 #define DUNE_FEM_INTERFACEOPERATOR_HH
 
+#include <dune/fem/io/parameter.hh>
 #include <dune/fem/operator/common/operator.hh>
 #include <dune/fem/operator/common/stencil.hh>
 #include <dune/fem/operator/linear/spoperator.hh>
@@ -42,7 +43,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
 
   void print(const std::string& filename="interface_matrix.dat") const
   {
-    std::ofstream ofs(filename);
+    std::ofstream ofs(Parameter::getValue<std::string>("fem.prefix",".")+"/"+filename);
     op_.matrix().print(ofs);
   }
 
