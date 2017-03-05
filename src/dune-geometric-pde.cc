@@ -44,10 +44,8 @@ int main(int argc,char** argv)
     typedef Dune::GeometryGrid<HostGridType,Dune::Fem::VertexFunction<HostGridType>> GridType;
     GridType grid(hostGrid);
 
-    // load parameter
+    // load problem type
     const bool useMeanCurvatureFlow(Dune::Fem::Parameter::getValue<bool>("UseMeanCurvatureFlow",0));
-    const std::string fileNameFinalMesh(Dune::Fem::Parameter::getValue<std::string>("fem.prefix",".")+"/"+
-      Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
     if(useMeanCurvatureFlow)
       std::cout<<"Problem type: mean curvature flow.\n";
     else
@@ -59,8 +57,10 @@ int main(int argc,char** argv)
     Dune::Fem::computeInterface<FemSchemeType>(femScheme);
 
     // dump final mesh as msh
-    if(fileNameFinalMesh!=static_cast<std::string>(MSHFILESDIR))
+    std::string fileNameFinalMesh(Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
+    if(!fileNameFinalMesh.empty())
     {
+      fileNameFinalMesh=Dune::Fem::Parameter::getValue<std::string>("fem.prefix",".")+"/"+fileNameFinalMesh;
       Dune::GmshWriter<typename GridType::LeafGridView> gmshWriter(grid.leafGridView());
       gmshWriter.setPrecision(15);
       gmshWriter.write(fileNameFinalMesh,elementsIDs);
