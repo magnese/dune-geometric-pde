@@ -59,6 +59,33 @@ struct EntityRatioInfo:public GnuplotWriter
   }
 };
 
+// dump interface average radius
+struct AverageRadiusInfo:public GnuplotWriter
+{
+  typedef GnuplotWriter BaseType;
+
+  AverageRadiusInfo(unsigned int precision=6):
+    BaseType("average_radius",precision)
+  {}
+
+  using BaseType::add;
+
+  template<typename GridPartType,typename TimeProviderType>
+  void add(const GridPartType& gridPart,const TimeProviderType& timeProvider,
+           const typename GridPartType::GridType::template Codim<0>::Entity::Geometry::GlobalCoordinate& center=
+           typename GridPartType::GridType::template Codim<0>::Entity::Geometry::GlobalCoordinate(0))
+  {
+    double radius(0);
+    for(const auto& vertex:vertices(gridPart))
+    {
+      const auto position(vertex.geometry().center()-center);
+      radius+=position.two_norm();
+    }
+    radius/=static_cast<double>(gridPart.grid().size(GridPartType::dimension));
+    add(timeProvider.time(),radius);
+  }
+};
+
 }
 }
 
