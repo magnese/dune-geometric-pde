@@ -28,7 +28,6 @@ void computeInterface(FemSchemeType& femScheme)
   // create solution
   typedef typename FemSchemeType::DiscreteFunctionType DiscreteFunctionType;
   DiscreteFunctionType solution("solution",femScheme.space());
-  solution.clear();
   auto& curvature(solution.template subDiscreteFunction<0>());
   curvature.name()="curvature";
   auto& displacement(solution.template subDiscreteFunction<1>());
@@ -41,6 +40,7 @@ void computeInterface(FemSchemeType& femScheme)
   DataOutput<typename FemSchemeType::GridType,decltype(ioTuple)> dataOutput(grid,ioTuple);
 
   // dump bulk solution at t0 and advance time provider
+  femScheme.computeInitialCurvature(solution,timeProvider);
   dataOutput.write(timeProvider);
   timeProvider.next();
 

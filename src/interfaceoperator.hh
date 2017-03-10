@@ -62,8 +62,9 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
     return op_;
   }
 
+  // assemble operator, use null velocity to compute initial curvature of interface
   template<typename TimeProviderType>
-  void assemble(const TimeProviderType& timeProvider)
+  void assemble(const TimeProviderType& timeProvider,bool velocityNotNull)
   {
     // allocate matrix
     DiagonalAndNeighborStencil<DiscreteSpaceType,DiscreteSpaceType> stencil(space_,space_);
@@ -98,17 +99,20 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
         baseSet.jacobianAll(qp,gradphi);
         const auto weight(entity.geometry().integrationElement(qp.position())*qp.weight());
         // fill A_m (curvature)
-        for(auto i=decltype(worlddim){0};i!=worlddim;++i)
-          for(auto j=decltype(worlddim){0};j!=worlddim;++j)
-          {
-            RangeFieldType value(0.0);
-            if(usemeancurvflow_)
-              value=phi[i][0]*phi[j][0];
-            else
-              value=gradphi[i][0]*gradphi[j][0];
-            value*=weight*timeProvider.deltaT(); // value=0.0 means v=0
-            localMatrix.add(i,j,value);
-          }
+        if(velocityNotNull)
+        {
+          for(auto i=decltype(worlddim){0};i!=worlddim;++i)
+            for(auto j=decltype(worlddim){0};j!=worlddim;++j)
+            {
+              RangeFieldType value(0.0);
+              if(usemeancurvflow_)
+                value=phi[i][0]*phi[j][0];
+              else
+                value=gradphi[i][0]*gradphi[j][0];
+              value*=weight;
+              localMatrix.add(i,j,value);
+            }
+        }
         // fill \vec{A_m} (position)
         for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
           for(auto j=decltype(columnLocalSize){worlddim};j!=columnLocalSize;++j)
@@ -128,7 +132,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
               value+=phi[i][index+1]*normalVector[index];
             value*=weight*phi[j][0];
             localMatrix.add(i,j,value);
-            localMatrix.add(j,i,-1.0*value);
+            localMatrix.add(j,i,-1.0*value/(timeProvider.deltaT()));
           }
       }
     }

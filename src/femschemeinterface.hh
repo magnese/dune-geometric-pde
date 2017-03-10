@@ -60,15 +60,22 @@ class FemSchemeInterface
     return space_;
   }
 
+  // compute intial curvature
+  template<typename TimeProviderType>
+  void computeInitialCurvature(DiscreteFunctionType& solution,const TimeProviderType& timeProvider)
+  {
+    operator()(solution,timeProvider,false);
+  }
+
   // compute solution
   template<typename TimeProviderType>
-  void operator()(DiscreteFunctionType& solution,const TimeProviderType& timeProvider)
+  void operator()(DiscreteFunctionType& solution,const TimeProviderType& timeProvider,bool velocityNotNull=true)
   {
     // clear solution
     solution.clear();
     // assemble operator
     InterfaceOperatorType op(space_,usemeancurvflow_);
-    op.assemble(timeProvider);
+    op.assemble(timeProvider,velocityNotNull);
     // assemble rhs
     DiscreteFunctionType rhs("interface RHS",space_);
     assembleInterfaceRHS(rhs,op);
