@@ -9,15 +9,14 @@ namespace Fem
 template<typename DiscreteFunctionType,typename OperatorType>
 void assembleInterfaceRHS(DiscreteFunctionType& rhs,const OperatorType& op)
 {
-  rhs.clear();
-
   DiscreteFunctionType temp("temp",rhs.space());
-  temp.clear();
-  temp.template subDiscreteFunction<1>()-=rhs.space().grid().coordFunction().discreteFunction();
+  temp.template subDiscreteFunction<0>().clear();
+  temp.template subDiscreteFunction<1>().assign(rhs.space().grid().coordFunction().discreteFunction());
 
   op(temp,rhs);
 
   rhs.template subDiscreteFunction<0>().clear();
+  rhs.template subDiscreteFunction<1>()*=-1.0;
 }
 
 }
