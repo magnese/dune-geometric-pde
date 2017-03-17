@@ -23,9 +23,9 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
 {
   public:
   typedef DiscreteFunctionImp DiscreteFunctionType;
-  typedef LinearOperatorImp<DiscreteFunctionType,DiscreteFunctionType> LinearOperatorType;
   typedef DiscreteFunctionType DomainFunctionType;
-  typedef DomainFunctionType RangeFunctionType;
+  typedef DiscreteFunctionType RangeFunctionType;
+  typedef LinearOperatorImp<DomainFunctionType,RangeFunctionType> LinearOperatorType;
   typedef typename DiscreteFunctionType::DiscreteFunctionSpaceType DiscreteSpaceType;
   typedef typename LinearOperatorType::MatrixType MatrixType;
   typedef InterfaceOperator<DiscreteFunctionType,LinearOperatorImp> ThisType;
