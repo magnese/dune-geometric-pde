@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include <dune/fem/io/io.hh>
 #include <dune/fem/io/parameter.hh>
 
 namespace Dune
@@ -21,7 +22,7 @@ struct GnuplotWriter
   typedef std::list<std::tuple<double,double>> ListType;
 
   GnuplotWriter(const std::string& fileName,unsigned int precision=6):
-    filename_(Parameter::getValue<std::string>("fem.prefix",".")+"/"+fileName+".dat"),precision_(precision)
+    filename_(fileName),precision_(precision)
   {}
 
   void add(double first,double second)
@@ -43,7 +44,10 @@ struct GnuplotWriter
   {
     if(!isEmpty())
     {
-      std::ofstream file(filename_);
+      const std::string& path(Parameter::getValue<std::string>("fem.prefix","."));
+      if(!directoryExists(path))
+        createDirectory(path);
+      std::ofstream ofs(path+"/"+filename_+".dat");
       file<<std::setprecision(precision_);
       for(const auto& value:values_)
         file<<std::get<0>(value)<<" "<<std::get<1>(value)<<"\n";

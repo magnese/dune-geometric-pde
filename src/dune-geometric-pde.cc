@@ -8,6 +8,7 @@
 #include <dune/grid/common/gridfactory.hh>
 #include <dune/grid/geometrygrid/grid.hh>
 #include <dune/fem/misc/mpimanager.hh>
+#include <dune/fem/io/io.hh>
 #include <dune/fem/io/parameter.hh>
 
 #include <string>
@@ -60,10 +61,12 @@ int main(int argc,char** argv)
     std::string fileNameFinalMesh(Dune::Fem::Parameter::getValue<std::string>("FileNameFinalMesh",""));
     if(!fileNameFinalMesh.empty())
     {
-      fileNameFinalMesh=Dune::Fem::Parameter::getValue<std::string>("fem.prefix",".")+"/"+fileNameFinalMesh;
+      const std::string& path(Dune::Fem::Parameter::getValue<std::string>("fem.prefix","."));
+      if(!Dune::Fem::directoryExists(path))
+        Dune::Fem::createDirectory(path);
       Dune::GmshWriter<typename GridType::LeafGridView> gmshWriter(grid.leafGridView());
       gmshWriter.setPrecision(15);
-      gmshWriter.write(fileNameFinalMesh,elementsIDs);
+      gmshWriter.write(path+"/"+fileNameFinalMesh,elementsIDs);
       std::cout<<"\nFinal mesh dumped into "<<fileNameFinalMesh<<".\n";
     }
 
