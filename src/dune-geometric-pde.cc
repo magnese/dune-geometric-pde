@@ -1,5 +1,7 @@
 #define POLORDER 1
 
+#define SOLVER_TYPE 0 // 0 UMFPACK, 1 SPQR
+
 #include "config.h"
 #include <dune/common/timer.hh>
 #include <dune/grid/albertagrid.hh>

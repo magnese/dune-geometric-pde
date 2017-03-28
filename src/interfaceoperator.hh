@@ -127,7 +127,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
             value*=weight;
             localMatrix.add(i,j,value);
           }
-        // fill \vec{N_m} (curvature_j-position_i) and -\vec{N_m}^T
+        // fill \vec{N_m} (curvature_j-position_i) and \vec{N_m}^T
         for(auto i=decltype(rowLocalSize){worlddim};i!=rowLocalSize;++i)
           for(auto j=decltype(worlddim){0};j!=worlddim;++j)
           {

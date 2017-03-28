@@ -24,6 +24,9 @@ UseMeanCurvatureFlow: 0
 # run the code until the interface is stationary (default: 0)
 #CreateStationaryInterface: 1
 
+# verbosity of the direct solvers (default: 0)
+fem.solver.verbose: 0
+
 # path used for all file output (default: .)
 fem.prefix: ./solution
 

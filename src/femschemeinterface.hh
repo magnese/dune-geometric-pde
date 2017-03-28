@@ -7,6 +7,7 @@
 #include <dune/fem/function/tuplediscretefunction.hh>
 #include <dune/fem/function/adaptivefunction.hh>
 #include <dune/fem/solver/umfpacksolver.hh>
+#include <dune/fem/solver/spqrsolver.hh>
 
 #include "interfaceoperator.hh"
 #include "assembleinterfacerhs.hh"
@@ -39,7 +40,11 @@ class FemSchemeInterface
   typedef InterfaceOperator<DiscreteFunctionType> InterfaceOperatorType;
 
   // define inverse operator
+  #if SOLVER_TYPE == 0
   typedef UMFPACKOp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
+  #elif SOLVER_TYPE == 1
+  typedef SPQROp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
+  #endif
 
   explicit FemSchemeInterface(GridType& grid,bool useMeanCurvFlow):
     grid_(grid),gridpart_(grid_),space_(gridpart_),usemeancurvflow_(useMeanCurvFlow)
