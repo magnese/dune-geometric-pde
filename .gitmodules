@@ -1,0 +1,3 @@
+[submodule "msh-files"]
+	path = msh-files
+	url = https://github.com/magnese/msh-files
