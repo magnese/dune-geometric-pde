@@ -5,11 +5,13 @@ dune-geometric-pde
 module which implements a parametric finite element scheme to solve the mean
 curvature flow and the surface diffusion problem in 2D and 3D domains.
 
-It is based on the scheme described in the paper
+A detailed description of this method can be found in the PhD thesis
 
-[J.W.~Barrett, H.~Garcke and R.~N\"urnberg: A parametric finite element method
-for fourth order geometric evolution equations, J. Comput. Phys. 222 (2007),
-441--467.][2]
+[Front tracking finite element methods for two-phase Navier--Stokes flow, 
+1 February 2018, Imperial College London, London, UK.][2]
+
+**This is the work I would ask everyone to cite when using
+dune-geometric-pde.**
 
 License
 -------
@@ -26,6 +28,6 @@ For installation instructions please see the [DUNE website][4].
 
 [0]: https://github.com/magnese/dune-repo/blob/master/dune-geometric-pde/
 [1]: https://www.dune-project.org/
-[2]: http://www.sciencedirect.com/science/article/pii/S0021999106003615
+[2]: https://spiral.imperial.ac.uk/handle/10044/1/68274
 [3]: https://github.com/magnese/dune-repo/blob/master/dune-geometric-pde/LICENSE.md
 [4]: https://www.dune-project.org/doc/installation/
