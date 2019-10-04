@@ -41,9 +41,9 @@ class FemSchemeInterface
 
   // define inverse operator
   #if SOLVER_TYPE == 0
-  typedef UMFPACKOp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
+  typedef UMFPACKInverseOperator<DiscreteFunctionType,typename InterfaceOperatorType::MatrixType> InterfaceInverseOperatorType;
   #elif SOLVER_TYPE == 1
-  typedef SPQROp<DiscreteFunctionType,InterfaceOperatorType> InterfaceInverseOperatorType;
+  typedef SPQRInverseOperator<DiscreteFunctionType,false,typename InterfaceOperatorType::MatrixType> InterfaceInverseOperatorType;
   #endif
 
   explicit FemSchemeInterface(GridType& grid,bool useMeanCurvFlow):
@@ -85,7 +85,8 @@ class FemSchemeInterface
     DiscreteFunctionType rhs("interface RHS",space_);
     assembleInterfaceRHS(rhs,op);
     // solve the linear system
-    InterfaceInverseOperatorType interfaceInvOp(op);
+    InterfaceInverseOperatorType interfaceInvOp;
+    interfaceInvOp.bind(op);
     interfaceInvOp(rhs,solution);
   }
 

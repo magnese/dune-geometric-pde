@@ -13,6 +13,7 @@
 #include <dune/fem/io/io.hh>
 #include <dune/fem/io/parameter.hh>
 
+#include <memory>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -41,11 +42,11 @@ int main(int argc,char** argv)
     std::vector<int> boundaryIDs(0);
     std::vector<int> elementsIDs(0);
     Dune::GmshReader<HostGridType>::read(hostGridFactory,fileName,boundaryIDs,elementsIDs);
-    HostGridType* hostGrid(hostGridFactory.createGrid());
+    std::unique_ptr<HostGridType> hostGrid(hostGridFactory.createGrid());
 
     // create grid
     typedef Dune::GeometryGrid<HostGridType,Dune::Fem::VertexFunction<HostGridType>> GridType;
-    GridType grid(hostGrid);
+    GridType grid(hostGrid.release());
 
     // load problem type
     const bool useMeanCurvatureFlow(Dune::Fem::Parameter::getValue<bool>("UseMeanCurvatureFlow",0));
