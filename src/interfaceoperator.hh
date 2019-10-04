@@ -61,7 +61,7 @@ class InterfaceOperator:public Operator<DiscreteFunctionImp,DiscreteFunctionImp>
     return space_;
   }
 
-  const LinearOperatorType& systemMatrix() const
+  const LinearOperatorType& linearOperator() const
   {
     return op_;
   }

@@ -86,7 +86,7 @@ class FemSchemeInterface
     assembleInterfaceRHS(rhs,op);
     // solve the linear system
     InterfaceInverseOperatorType interfaceInvOp;
-    interfaceInvOp.bind(op);
+    interfaceInvOp.bind(op.linearOperator());
     interfaceInvOp(rhs,solution);
   }
 
